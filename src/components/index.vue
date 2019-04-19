@@ -1,9 +1,11 @@
 <template>
   <div class="container">
-    <header></header>
+    <header v-drag="{a:1234}" v-demo="{c:2}">
+      <button drag>fsfasd</button>
+    </header>
     <article>
-      <aside class="drag-wrapper" id="target">
-        <div class="drag-item" v-drag></div>
+      <aside class="drag-wrapper" id="target" ref="target" v-demo="{bbb:22}">
+        <div class="drag-item"></div>
         <vue-dragger class="drag-item" v-for="el in [0,1,2,3,4,5,6,7]" :key="el">
           vue-dragger
           <template slot="dragger" v-if="el>5">
@@ -20,8 +22,16 @@
   </div>
 </template>
 <script>
-import '../directive/vue-drag'
+import Vue from 'vue'
+import vueDrag from '../directive/vue-drag.js'
 import VueDragger from './vue-dragger.vue'
+vueDrag()
+Vue.directive('demo', {
+  bind (el, binding) {
+    // var fu = () => { console.log(binding, 2222222222222222) }
+    // el.addEventListener('click', fu, false)
+  }
+})
 export default {
   data () {
     return {
@@ -31,8 +41,8 @@ export default {
     VueDragger
   },
   methods: {
-    targetCallback (e) {
-      alert(1)
+    targetCallback (e, el) {
+      console.log('回调')
     }
   }
 }

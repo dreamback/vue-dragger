@@ -64,7 +64,7 @@ export default {
     }
   },
   mounted () {
-    console.log(this.$slots.dragger)
+    // console.log(this.$slots.dragger)
     this.container = this.$refs.container
     this.draggerHandle = this.$slots.dragger ? this.$slots.dragger[0].elm : this.container
     this.draggerHandle.addEventListener('mousedown', this.mousedownFn)
@@ -114,5 +114,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
 </style>
