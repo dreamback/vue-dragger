@@ -4,16 +4,19 @@
       <button drag>fsfasd</button>
     </header>
     <article>
-      <aside class="drag-wrapper" id="target" ref="target" v-demo="{bbb:22}">
+      <aside class="drag-wrapper" id="target" ref="target" v-drag="{copy:true, target:'#content', callback:cab}">
         <div class="drag-item"></div>
-        <vue-dragger class="drag-item" v-for="el in [0,1,2,3,4,5,6,7]" :key="el">
+        <!-- <vue-dragger class="drag-item" v-for="el in [0,1,2,3,4,5,6,7]" :key="el">
           vue-dragger
           <template slot="dragger" v-if="el>5">
             <div>dragger</div>
           </template>
-        </vue-dragger>
+        </vue-dragger> -->
+        <div class="drag-item" drag v-for="el in [0,1,2,3,4,5,6,7]" :key="el">
+          {{el}}
+        </div>
       </aside>
-      <div class="content" v-drag="{target:'#target', callback: targetCallback}">
+      <div class="content" id="content" v-drag="{target:'#target', callback: targetCallback}">
         <div dragBox class="v-drag">
           <button drag="dragBox">button</button>
         </div>
@@ -41,8 +44,11 @@ export default {
     VueDragger
   },
   methods: {
-    targetCallback (e, el) {
-      console.log('回调')
+    targetCallback (e, enter, el) {
+      console.log('回调' + enter)
+    },
+    cab (e, enter, el) {
+      console.log(enter)
     }
   }
 }

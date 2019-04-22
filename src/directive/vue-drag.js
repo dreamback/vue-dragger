@@ -21,6 +21,7 @@ export default function vueDrag () {
       var startPageXY = {}
       var startStatus = {}
       var bindingValue = binding.value
+      bindingValue = bindingValue || {}
 
       const getClientRect = (el) => el.getBoundingClientRect()
 
@@ -69,7 +70,16 @@ export default function vueDrag () {
         startStatus = getElePos($target)
 
         startPageXY = {x: pageX, y: pageY}
-        moveEle = $target
+        if (bindingValue.copy) {
+          moveEle = document.createElement('div')
+          moveEle.appendChild($target.cloneNode(true))
+          document.body.appendChild(moveEle)
+        } else {
+          moveEle = $target
+        }
+
+        moveEle.style.width = $target.offsetWidth + 'px'
+        moveEle.style.height = $target.offsetHeight + 'px'
         moveEle.style.position = 'absolute'
         moveEle.style.top = startStatus.top + 'px'
         moveEle.style.left = startStatus.left + 'px'
@@ -85,6 +95,7 @@ export default function vueDrag () {
       }
 
       var enterTarget = ''
+      var hasEnter = false
 
       const mousedownHandler = (e) => {
         fixEvent(e)
@@ -110,26 +121,40 @@ export default function vueDrag () {
         if (moveEle)moveEle.style.pointerEvents = ''
         for (let key in oldStyle) docBody.style[key] = oldStyle[key]
 
-        if (!bindingValue || (bindingValue && !bindingValue.target)) {
+        if (!bindingValue || !bindingValue.target) {
           moveEle = null
         }
+        bindingValue.callback && bindingValue.callback(e, hasEnter, moveEle)
 
         window.removeEventListener('mousemove', mousemoveHandler)
         window.removeEventListener('mouseup', mouseupHandler)
+        hasEnter = false
       }
 
-      const enterTargetMouseHandler = e => {
-        if (!moveEle) return
-        bindingValue.callback && bindingValue.callback(e, moveEle)
-        moveEle.style.pointerEvents = ''
-        moveEle = null
+      // const enterTargetMouseUpHandler = e => {
+      //   if (!moveEle) return
+      //   bindingValue.callback && bindingValue.callback(e, true, moveEle)
+      //   moveEle.style.pointerEvents = ''
+      //   moveEle = null
+      // }
+
+      const enterTargetMouseOverHandler = e => {
+        hasEnter = true
+      }
+
+      const enterTargetMouseOutHandler = e => {
+        hasEnter = false
       }
 
       $el.addEventListener('mousedown', mousedownHandler, false)
+      window.removeEventListener('mousemove', mousemoveHandler)
+      window.removeEventListener('mouseup', mouseupHandler)
 
-      if (bindingValue && bindingValue.target) {
+      if (bindingValue.target) {
         enterTarget = document.querySelector(bindingValue.target)
-        enterTarget.addEventListener('mouseup', enterTargetMouseHandler, true)
+        // enterTarget.addEventListener('mouseup', enterTargetMouseUpHandler, true)
+        enterTarget.addEventListener('mouseover', enterTargetMouseOverHandler)
+        enterTarget.addEventListener('mouseout', enterTargetMouseOutHandler)
       }
     }
   })
