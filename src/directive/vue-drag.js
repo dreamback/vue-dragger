@@ -54,17 +54,20 @@ export default function vueDrag () {
           return fixEvent(e)
         }
       }
+      var relative = {top: 0, left: 0, maxLeft: 0, maxTop: 0}
 
       const getElePos = (el) => {
         var scrollPos = getScrollPos()
         var clientRect = getClientRect(el)
         return {
-          top: scrollPos.top + clientRect.top,
-          left: scrollPos.left + clientRect.left,
-          maxLeft: docBody.scrollWidth - el.offsetWidth,
-          maxTop: docBody.scrollHeight - el.offsetHeight
+          top: scrollPos.top + clientRect.top - relative.top,
+          left: scrollPos.left + clientRect.left - relative.left,
+          maxLeft: docBody.scrollWidth - el.offsetWidth - relative.maxLeft,
+          maxTop: docBody.scrollHeight - el.offsetHeight - relative.maxTop
         }
       }
+
+      relative = bindingValue.relative ? getElePos(document.querySelector(bindingValue.relative)) : {top: 0, left: 0, maxLeft: 0, maxTop: 0}
 
       const createDragLayout = ({$target, pageX, pageY}) => {
         startStatus = getElePos($target)
@@ -83,6 +86,7 @@ export default function vueDrag () {
         moveEle.style.position = 'absolute'
         moveEle.style.top = startStatus.top + 'px'
         moveEle.style.left = startStatus.left + 'px'
+        moveEle.style.zIndex = 9999
 
         moveEle.style.pointerEvents = 'none'
       }
@@ -118,7 +122,10 @@ export default function vueDrag () {
       const mouseupHandler = (e) => {
         docBody.style[prefix + 'user-select'] = ''
 
-        if (moveEle)moveEle.style.pointerEvents = ''
+        if (moveEle) {
+          moveEle.style.pointerEvents = ''
+          moveEle.style.zIndex = 1
+        }
         for (let key in oldStyle) docBody.style[key] = oldStyle[key]
 
         if (!bindingValue || !bindingValue.target) {

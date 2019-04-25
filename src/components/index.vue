@@ -16,18 +16,23 @@
           {{el}}
         </div>
       </aside>
-      <div class="content" id="content" v-drag="{target:'#target', callback: targetCallback}">
+      <vue-drag-layout class="content" id="content" v-drag="{target:'#target', relative:'#content', callback: targetCallback}">
         <div dragBox class="v-drag">
           <button drag="dragBox">button</button>
         </div>
-      </div>
+        <vue-drag-layout-item drag v-for="el in [0,1,2,3,4,5,6,7]" :key="el" :index="el">
+          {{el}}
+        </vue-drag-layout-item>
+      </vue-drag-layout>
     </article>
   </div>
 </template>
 <script>
 import Vue from 'vue'
 import vueDrag from '../directive/vue-drag.js'
-import VueDragger from './vue-dragger.vue'
+import vueDragLayout from './vue-drag-layout.vue'
+import vueDragLayoutItem from './vue-drag-layout-item.vue'
+
 vueDrag()
 Vue.directive('demo', {
   bind (el, binding) {
@@ -41,7 +46,8 @@ export default {
     }
   },
   components: {
-    VueDragger
+    vueDragLayout,
+    vueDragLayoutItem
   },
   methods: {
     targetCallback (e, enter, el) {
@@ -84,4 +90,5 @@ html,body{height: 100%;}
   }
 
   .v-drag{width: 100px;height: 100px;background: #f00;}
+  .v-layout{box-sizing: border-box;background: #8962FF;border: 2px solid #fff;}
 </style>
